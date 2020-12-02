@@ -64,58 +64,58 @@ public class Info extends javax.swing.JPanel {
 
         setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        jPanel1.setBackground(new java.awt.Color(255, 255, 255));
+        jPanel1.setBackground(new java.awt.Color(29, 29, 32));
         jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jLabel1.setFont(new java.awt.Font("Dubai", 1, 30)); // NOI18N
         jLabel1.setForeground(new java.awt.Color(153, 153, 153));
-        jLabel1.setText("INFORMAÇÕES DO SISTEMA ");
-        jPanel1.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 20, -1, -1));
+        jLabel1.setText("SYSTEM INFORMATION ");
+        jPanel1.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 20, -1, -1));
 
         lblOperatingSystem.setFont(new java.awt.Font("Segoe UI Symbol", 0, 18)); // NOI18N
         lblOperatingSystem.setForeground(new java.awt.Color(0, 153, 153));
         lblOperatingSystem.setText(":");
-        jPanel1.add(lblOperatingSystem, new org.netbeans.lib.awtextra.AbsoluteConstraints(260, 80, 260, 30));
+        jPanel1.add(lblOperatingSystem, new org.netbeans.lib.awtextra.AbsoluteConstraints(270, 110, 260, 30));
 
         jLabel3.setBackground(new java.awt.Color(255, 255, 255));
         jLabel3.setFont(new java.awt.Font("Dubai", 1, 24)); // NOI18N
         jLabel3.setForeground(new java.awt.Color(153, 153, 153));
-        jLabel3.setText("Processador");
-        jPanel1.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 130, 140, 30));
+        jLabel3.setText("Processor");
+        jPanel1.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 180, 150, 30));
 
         lblCPUVendor.setFont(new java.awt.Font("Segoe UI Symbol", 0, 18)); // NOI18N
         lblCPUVendor.setForeground(new java.awt.Color(0, 153, 153));
         lblCPUVendor.setText(":");
-        jPanel1.add(lblCPUVendor, new org.netbeans.lib.awtextra.AbsoluteConstraints(160, 220, 370, -1));
+        jPanel1.add(lblCPUVendor, new org.netbeans.lib.awtextra.AbsoluteConstraints(190, 270, 370, -1));
 
         lblCPUMicroArchtecture.setFont(new java.awt.Font("Segoe UI Symbol", 0, 18)); // NOI18N
         lblCPUMicroArchtecture.setForeground(new java.awt.Color(0, 153, 153));
         lblCPUMicroArchtecture.setText(":");
-        jPanel1.add(lblCPUMicroArchtecture, new org.netbeans.lib.awtextra.AbsoluteConstraints(160, 190, 380, -1));
+        jPanel1.add(lblCPUMicroArchtecture, new org.netbeans.lib.awtextra.AbsoluteConstraints(190, 240, 380, -1));
 
         lblCPUIdentifier.setFont(new java.awt.Font("Segoe UI Symbol", 0, 18)); // NOI18N
         lblCPUIdentifier.setForeground(new java.awt.Color(0, 153, 153));
         lblCPUIdentifier.setText(":");
-        jPanel1.add(lblCPUIdentifier, new org.netbeans.lib.awtextra.AbsoluteConstraints(160, 160, 370, 30));
+        jPanel1.add(lblCPUIdentifier, new org.netbeans.lib.awtextra.AbsoluteConstraints(190, 210, 370, 30));
 
         lblCPUName.setFont(new java.awt.Font("Segoe UI Symbol", 0, 18)); // NOI18N
         lblCPUName.setForeground(new java.awt.Color(0, 153, 153));
         lblCPUName.setText(":");
-        jPanel1.add(lblCPUName, new org.netbeans.lib.awtextra.AbsoluteConstraints(160, 130, 380, 30));
+        jPanel1.add(lblCPUName, new org.netbeans.lib.awtextra.AbsoluteConstraints(190, 180, 380, 30));
 
         jLabel10.setBackground(new java.awt.Color(255, 0, 51));
-        jLabel10.setFont(new java.awt.Font("Dubai", 1, 14)); // NOI18N
+        jLabel10.setFont(new java.awt.Font("Dubai", 1, 48)); // NOI18N
         jLabel10.setForeground(new java.awt.Color(102, 102, 102));
         jLabel10.setText("MachineTech");
-        jPanel1.add(jLabel10, new org.netbeans.lib.awtextra.AbsoluteConstraints(550, 240, 90, 40));
+        jPanel1.add(jLabel10, new org.netbeans.lib.awtextra.AbsoluteConstraints(640, 160, 300, 40));
 
         jLabel4.setBackground(new java.awt.Color(255, 255, 255));
         jLabel4.setFont(new java.awt.Font("Dubai", 1, 24)); // NOI18N
         jLabel4.setForeground(new java.awt.Color(153, 153, 153));
-        jLabel4.setText("Sistema Operacional");
-        jPanel1.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 80, 280, 30));
+        jLabel4.setText("Operational system ");
+        jPanel1.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 110, 280, 30));
 
-        add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 620, 270));
+        add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 650, 270));
     }// </editor-fold>//GEN-END:initComponents
 
     private void jLabel21MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel21MouseClicked

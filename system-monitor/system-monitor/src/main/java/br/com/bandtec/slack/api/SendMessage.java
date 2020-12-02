@@ -11,7 +11,7 @@ package br.com.bandtec.slack.api;
 
     public class SendMessage {
 
-        private static String slackWebhookUrl = "https://hooks.slack.com/services/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";
+        private static String slackWebhookUrl = "https://hooks.slack.com/services/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";
 
         public static void sendMessage(Message message) {
             CloseableHttpClient client = HttpClients.createDefault();

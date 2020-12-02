@@ -1,37 +1,38 @@
 package com.mycompany.Telas;
-// --------- importando -----------------------
 
 import br.com.bandtec.slack.api.Message;
-//import com.fasterxml.jackson.databind.ObjectMapper;
-//import org.apache.http.client.methods.HttpPost;
-//import org.apache.http.entity.StringEntity;
-//import org.apache.http.impl.client.CloseableHttpClient;
-//import org.apache.http.impl.client.HttpClients;
-
 import br.com.bandtec.slack.api.SendMessage;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mycompany.API.Connection;
+
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import com.mycompany.API.CPU;
 import com.mycompany.API.Disk;
 import com.mycompany.API.RAM;
-
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.Date;
 import java.util.List;
 import java.util.TimerTask;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
-
+import javax.swing.Timer;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
 import org.springframework.jdbc.core.JdbcTemplate;
 import oshi.SystemInfo;
 
-public class TemaPreto extends javax.swing.JFrame {
+public class main extends javax.swing.JFrame {
 
     private java.util.Timer mTimer = new java.util.Timer();
+    private java.util.Timer bTimer = new java.util.Timer();
+    private java.util.Timer cTimer = new java.util.Timer();
+    private java.util.Timer dTimer = new java.util.Timer();
     private SystemInfo si = new SystemInfo();
     private CPU cpu = new CPU();
     private RAM ram = new RAM();
@@ -40,11 +41,29 @@ public class TemaPreto extends javax.swing.JFrame {
     private Connection con = new Connection();
     private JdbcTemplate template = new JdbcTemplate(con.getDatasource());
     private Date dataJava = new Date();
-   
+    private static String slackWebhookUrl = "https://hooks.slack.com/services/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";
 
+    public static void sendMessage(Message message) {
+        CloseableHttpClient client = HttpClients.createDefault();
+        HttpPost httpPost = new HttpPost(slackWebhookUrl);
 
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            String json = objectMapper.writeValueAsString(message);
 
-    public TemaPreto() {
+            StringEntity entity = new StringEntity(json);
+            httpPost.setEntity(entity);
+            httpPost.setHeader("Accept", "application/json");
+            httpPost.setHeader("Content-type", "application/json");
+
+            client.execute(httpPost);
+            client.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public main() {
 
         initComponents();
 
@@ -101,23 +120,45 @@ public class TemaPreto extends javax.swing.JFrame {
         };
 
         mTimer.scheduleAtFixedRate(inserir,
-                0, 60000); // iserir acada 1 minuto
+                5000, 5000); // iserir acada 5 segundos
 
         // --------------------------Personalizando barra no swing---------------------------------------//   
-              try {
+        try {
             UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
         } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException ex) {
-             Logger.getLogger(TemaPreto.class.getName()).log(Level.SEVERE, null, ex);
-          System.out.println("não foi possivel personalizar as barras na tela de frame em tela inicial");;
+            System.out.println("nï¿½o foi possivel personalizar as barras na tela de frame em tela inicial");;
         }
-        // --------------------------------------------exibir no swing----------------------------------//
-        TimerTask mostrar = new TimerTask() {
+        // --------------------------verificando internet ---------------------------------------//   
+        TimerTask task = new TimerTask() {
+
+            @Override
+            public void run() {
+                long velocidadeDaNet = si.getHardware().getNetworkIFs()[0].getSpeed() + si.getHardware().getNetworkIFs()[2].getSpeed() + si.getHardware().getNetworkIFs()[1].getSpeed();
+                // System.out.println(velocidadeDaNet);
+
+                if (velocidadeDaNet <= 6000000) {
+                    onLabel.setText("OFFLINE");
+                    Statusrede = "OFFLINE";
+
+                } else {
+                    onLabel.setText("ONLINE");
+                    Statusrede = "ONLINE";
+
+                }
+
+            }
+        };
+
+        bTimer.scheduleAtFixedRate(task,
+                999, 999);
+        // --------------------------exibindo no swing acada 1 seg---------------------------------------//   
+        TimerTask swing = new TimerTask() {
 
             @Override
             public void run() {
 
                 lblCPU.setText(String.format("%.2fGhz", cpu.getCurrentFrequency()));
-                lblCPU1.setText(String.format("%.2fGhz", cpu.getFrequency()));//30
+                lblCPU1.setText(String.format("%.2fGhz", cpu.getFrequency()));//30%
                 // 40
                 lblCPUPercent.setText(String.format("%.1f%%", cpu.getCurrentPercent()));
 
@@ -140,33 +181,9 @@ public class TemaPreto extends javax.swing.JFrame {
             }
         };
 
-        mTimer.scheduleAtFixedRate(mostrar,
-                0, 1000);
-        // ------------------
+        cTimer.scheduleAtFixedRate(swing,
+                999, 999);
 
-        // --------------------------verificando internet ---------------------------------------//   
-        TimerTask task = new TimerTask() {
-
-            @Override
-            public void run() {
-                long velocidadeDaNet = si.getHardware().getNetworkIFs()[0].getSpeed() + si.getHardware().getNetworkIFs()[2].getSpeed() + si.getHardware().getNetworkIFs()[1].getSpeed();
-                // System.out.println(velocidadeDaNet);
-
-                if (velocidadeDaNet <= 6000000) {
-                    onLabel.setText("OFFLINE");
-                    Statusrede = "OFFLINE";
-
-                } else {
-                    onLabel.setText("ONLINE");
-                    Statusrede = "ONLINE";
-
-                }
-
-            }
-        };
-
-        mTimer.scheduleAtFixedRate(task,
-                0, 5000);
         // --------------------------envaindo realtorio para o slack---------------------------------------//   
         TimerTask slackttask = new TimerTask() {
 
@@ -236,10 +253,12 @@ public class TemaPreto extends javax.swing.JFrame {
             }
         };
 
-        mTimer.scheduleAtFixedRate(slackttask,
-                0, 120000);
+        dTimer.scheduleAtFixedRate(slackttask,
+                100, 100);
 
     }
+
+
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
@@ -285,7 +304,6 @@ public class TemaPreto extends javax.swing.JFrame {
         jPanel8 = new javax.swing.JPanel();
         jLabel5 = new javax.swing.JLabel();
         jPanel2 = new javax.swing.JPanel();
-        jLabel10 = new javax.swing.JLabel();
         jPanel15 = new javax.swing.JPanel();
         jLabel16 = new javax.swing.JLabel();
         jPanel16 = new javax.swing.JPanel();
@@ -358,10 +376,10 @@ public class TemaPreto extends javax.swing.JFrame {
         jPanel3.setBackground(new java.awt.Color(29, 29, 32));
         jPanel3.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        jLabel9.setFont(new java.awt.Font("Verdana", 1, 18)); // NOI18N
+        jLabel9.setFont(new java.awt.Font("Verdana", 1, 14)); // NOI18N
         jLabel9.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel9.setText("OPERATING STATUS ");
-        jPanel3.add(jLabel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 20, -1, -1));
+        jLabel9.setText("STATUS DE FUNCIONAMENTO");
+        jPanel3.add(jLabel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 20, -1, -1));
 
         onLabel.setFont(new java.awt.Font("Verdana", 1, 48)); // NOI18N
         onLabel.setForeground(new java.awt.Color(0, 153, 153));
@@ -417,11 +435,11 @@ public class TemaPreto extends javax.swing.JFrame {
         jPanel5.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 20, -1, -1));
 
         jLabel14.setForeground(new java.awt.Color(204, 204, 204));
-        jLabel14.setText("Used");
+        jLabel14.setText("Utilizado");
         jPanel5.add(jLabel14, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 60, -1, -1));
 
         jLabel19.setForeground(new java.awt.Color(204, 204, 204));
-        jLabel19.setText("Available");
+        jLabel19.setText("Disponível");
         jPanel5.add(jLabel19, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 140, -1, -1));
 
         lblRAM.setFont(new java.awt.Font("Ubuntu", 0, 24)); // NOI18N
@@ -451,11 +469,11 @@ public class TemaPreto extends javax.swing.JFrame {
         jPanel4.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 21, -1, -1));
 
         jLabel12.setForeground(new java.awt.Color(204, 204, 204));
-        jLabel12.setText("Average");
+        jLabel12.setText("Média");
         jPanel4.add(jLabel12, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 55, -1, -1));
 
         jLabel18.setForeground(new java.awt.Color(204, 204, 204));
-        jLabel18.setText("Maximum");
+        jLabel18.setText("Máximo");
         jPanel4.add(jLabel18, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 140, -1, -1));
 
         lblCPU.setFont(new java.awt.Font("Ubuntu", 0, 24)); // NOI18N
@@ -480,7 +498,7 @@ public class TemaPreto extends javax.swing.JFrame {
 
         jLabel4.setFont(new java.awt.Font("Verdana", 1, 18)); // NOI18N
         jLabel4.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel4.setText("External disck ");
+        jLabel4.setText("Disco Externo");
         jPanel7.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 20, -1, -1));
 
         jLabel29.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
@@ -490,17 +508,17 @@ public class TemaPreto extends javax.swing.JFrame {
 
         jLabel30.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
         jLabel30.setForeground(new java.awt.Color(204, 204, 204));
-        jLabel30.setText("Name:");
+        jLabel30.setText("Nome:");
         jPanel7.add(jLabel30, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 80, -1, -1));
 
         jLabel31.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
         jLabel31.setForeground(new java.awt.Color(204, 204, 204));
-        jLabel31.setText("Total Space: ");
+        jLabel31.setText("Espaço Total:");
         jPanel7.add(jLabel31, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 110, -1, -1));
 
         jLabel32.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
         jLabel32.setForeground(new java.awt.Color(204, 204, 204));
-        jLabel32.setText("Free space: ");
+        jLabel32.setText("Espaço Livre:");
         jPanel7.add(jLabel32, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 140, -1, -1));
 
         pgbUsageDisk1.setBackground(new java.awt.Color(62, 62, 62));
@@ -527,28 +545,12 @@ public class TemaPreto extends javax.swing.JFrame {
 
         jLabel5.setFont(new java.awt.Font("Verdana", 1, 18)); // NOI18N
         jLabel5.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel5.setText("Configuration");
+        jLabel5.setText("Configuração");
         jPanel8.add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 19, -1, -1));
 
         jPanel2.setBackground(new java.awt.Color(0, 153, 153));
         jPanel2.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        jPanel2.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jPanel2MouseClicked(evt);
-            }
-        });
         jPanel2.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-
-        jLabel10.setFont(new java.awt.Font("Tahoma", 1, 24)); // NOI18N
-        jLabel10.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel10.setText("LOGOUT");
-        jLabel10.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jLabel10MouseClicked(evt);
-            }
-        });
-        jPanel2.add(jLabel10, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 0, 110, 50));
-
         jPanel8.add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 153, 190, 50));
 
         jPanel15.setBackground(new java.awt.Color(0, 153, 153));
@@ -561,7 +563,7 @@ public class TemaPreto extends javax.swing.JFrame {
 
         jLabel16.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
         jLabel16.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel16.setText("PROCESS");
+        jLabel16.setText("Processos");
         jLabel16.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 jLabel16MouseClicked(evt);
@@ -573,8 +575,8 @@ public class TemaPreto extends javax.swing.JFrame {
         jPanel15Layout.setHorizontalGroup(
             jPanel15Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel15Layout.createSequentialGroup()
-                .addContainerGap(52, Short.MAX_VALUE)
-                .addComponent(jLabel16, javax.swing.GroupLayout.PREFERRED_SIZE, 114, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(56, Short.MAX_VALUE)
+                .addComponent(jLabel16, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(24, 24, 24))
         );
         jPanel15Layout.setVerticalGroup(
@@ -594,16 +596,16 @@ public class TemaPreto extends javax.swing.JFrame {
 
         jLabel17.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
         jLabel17.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel17.setText("SYSTEM");
+        jLabel17.setText("Sistema");
 
         javax.swing.GroupLayout jPanel16Layout = new javax.swing.GroupLayout(jPanel16);
         jPanel16.setLayout(jPanel16Layout);
         jPanel16Layout.setHorizontalGroup(
             jPanel16Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel16Layout.createSequentialGroup()
-                .addGap(58, 58, 58)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel16Layout.createSequentialGroup()
+                .addContainerGap(69, Short.MAX_VALUE)
                 .addComponent(jLabel17)
-                .addContainerGap(60, Short.MAX_VALUE))
+                .addGap(50, 50, 50))
         );
         jPanel16Layout.setVerticalGroup(
             jPanel16Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -635,7 +637,7 @@ public class TemaPreto extends javax.swing.JFrame {
 
         jLabel24.setFont(new java.awt.Font("Verdana", 1, 18)); // NOI18N
         jLabel24.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel24.setText("Local Disk ");
+        jLabel24.setText("Disco Local");
         jPanel9.add(jLabel24, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 20, -1, -1));
 
         jLabel25.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
@@ -645,17 +647,17 @@ public class TemaPreto extends javax.swing.JFrame {
 
         jLabel26.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
         jLabel26.setForeground(new java.awt.Color(204, 204, 204));
-        jLabel26.setText("Name:");
+        jLabel26.setText("Nome:");
         jPanel9.add(jLabel26, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 80, -1, -1));
 
         jLabel27.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
         jLabel27.setForeground(new java.awt.Color(204, 204, 204));
-        jLabel27.setText("Total Space: ");
+        jLabel27.setText("Espaço Total:");
         jPanel9.add(jLabel27, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 110, -1, -1));
 
         jLabel28.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
         jLabel28.setForeground(new java.awt.Color(204, 204, 204));
-        jLabel28.setText("Free space: ");
+        jLabel28.setText("Espaço Livre:");
         jPanel9.add(jLabel28, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 140, -1, -1));
 
         lblTotalSpaceDisk0.setForeground(new java.awt.Color(0, 153, 153));
@@ -699,8 +701,8 @@ public class TemaPreto extends javax.swing.JFrame {
 
         } catch (IOException ex) {
 
-            System.out.println("não foi posivel acesar o site");
-            JOptionPane.showMessageDialog(null, "não foi posivel acesar o site", "Alerta do Sistema", JOptionPane.ERROR_MESSAGE);
+            System.out.println("nï¿½o foi posivel acesar o site");
+            JOptionPane.showMessageDialog(null, "nï¿½o foi posivel acesar o site", "Alerta do Sistema", JOptionPane.ERROR_MESSAGE);
 
         }
 
@@ -712,8 +714,8 @@ public class TemaPreto extends javax.swing.JFrame {
             java.awt.Desktop.getDesktop().browse(new java.net.URI("file:///C:/Users/aluga.com/Desktop/repositorio/grupo-06-adsa-20201/MachineTech-%20Web%20site%20Responsivo/MachineTech-%20Web%20site%20Responsivo/Site/login.html"));
         } catch (URISyntaxException | IOException ex) {
 
-            System.out.println("não foi posivel acesar o site");
-            JOptionPane.showMessageDialog(null, "não foi posivel acesar o site", "Alerta do Sistema", JOptionPane.ERROR_MESSAGE);
+            System.out.println("nï¿½o foi posivel acesar o site");
+            JOptionPane.showMessageDialog(null, "nï¿½o foi posivel acesar o site", "Alerta do Sistema", JOptionPane.ERROR_MESSAGE);
         }
     }//GEN-LAST:event_jLabel21MouseClicked
 
@@ -722,8 +724,8 @@ public class TemaPreto extends javax.swing.JFrame {
             java.awt.Desktop.getDesktop().browse(new java.net.URI("https://github.com/BandTec/grupo-06-adsa-20201"));
         } catch (URISyntaxException | IOException ex) {
 
-            System.out.println("erro 1|| data atual|| não foi posivel acesar o site");
-            JOptionPane.showMessageDialog(null, "não foi posivel acesar o site", "Alerta do Sistema", JOptionPane.ERROR_MESSAGE);
+            System.out.println("erro 1|| data atual|| nï¿½o foi posivel acesar o site");
+            JOptionPane.showMessageDialog(null, "nï¿½o foi posivel acesar o site", "Alerta do Sistema", JOptionPane.ERROR_MESSAGE);
                     }    }//GEN-LAST:event_jLabel23MouseClicked
 
     private void jPanel16MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jPanel16MouseClicked
@@ -747,25 +749,14 @@ public class TemaPreto extends javax.swing.JFrame {
         frame.pack();
         frame.setVisible(true);
     }//GEN-LAST:event_jLabel16MouseClicked
-
-    private void jLabel10MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel10MouseClicked
-          new Login().setVisible(true);
-          dispose();
-    }//GEN-LAST:event_jLabel10MouseClicked
-
-    private void jPanel2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jPanel2MouseClicked
-        new Login().setVisible(true);
-          dispose();
-    }//GEN-LAST:event_jPanel2MouseClicked
     public static void main(String args[]) {
         java.awt.EventQueue.invokeLater(() -> {
-            new TemaPreto().setVisible(true);
+            new main().setVisible(true);
         });
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel12;
     private javax.swing.JLabel jLabel13;
