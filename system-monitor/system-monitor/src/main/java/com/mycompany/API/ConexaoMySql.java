@@ -14,7 +14,7 @@ public class ConexaoMySql {
 
         this.datasource.setDriverClassName("com.mysql.cj.jdbc.Driver");
 
-        this.datasource.setUrl("jdbc:mysql://localhost:3306/machinetech");
+        this.datasource.setUrl("jdbc:mysql://172.17.0.2:3306/machinetech");
 
         this.datasource.setUsername("root");
 

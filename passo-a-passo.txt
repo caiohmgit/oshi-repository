@@ -1,0 +1,27 @@
+1° Criação de uma classe de conexão com o MySql
+2° Criação de uma classe executável para inserir dados na tabela criada
+3° Alterei a classe main que será executada no pom.xml e 
+   clean and build para gerar o jar
+4° Instanciei a máquina
+5° Entrei no docker (
+	1 - idContainer: sudo docker ps -a (para ver os containers)
+	2 - sudo docker start "id container(57b199a9aea4)" 
+	(se não estiver startado)
+	3 - sudo docker exec -it "id container" bash
+6° Entrar no mysql: mysql -u "usuario" -p
+7° Criar database (mesma que foi colocado na string de conexão - item1)
+8° Criar as tabelas
+9° Sair do mysql e dar git clone com o repositório
+10° Comando cd até entrar na 'target'
+11° Executar java -jar "nome do arquivo jar"
+12° Entrar no mysql e mostrar os dados inseridos 
+
+OBS: 1- Instalar comando solicitados (no meu caso mvn)
+     2- Necessário instalação do java para rodar a aplicação 
+        (passo-a-passo da marise (OSHI DEMO))
+
+
+
+
+
+Comando para linkar BD -> jar exec: sudo docker run --name java --link MySQL:mysql -t -d d23bdf5b1b1b top

@@ -49,7 +49,7 @@ public class TemaPreto extends javax.swing.JFrame {
         initComponents();
 
         //--------------------------recriando tabelas no banco de dados----------------------------------------------------------//
-        template.execute("DROP TABLE IF EXISTS dadosMaquinas");
+   /*     template.execute("DROP TABLE IF EXISTS dadosMaquinas");
 
         String criacao = "CREATE TABLE dadosMaquinas("
                 + "id INT PRIMARY KEY IDENTITY(1,1),"
@@ -68,7 +68,7 @@ public class TemaPreto extends javax.swing.JFrame {
                 + ")";
 
         template.execute(criacao);
-
+        */
         // --------------------------Inserindo dados no banco de dados acada 5 segundos---------------------------------------//     
         TimerTask inserir = new TimerTask() {
 
@@ -84,7 +84,7 @@ public class TemaPreto extends javax.swing.JFrame {
                 String discoTotal = disk.getDiskSize(0).toString();
                 String discoDisponi = disk.getFreeSize(0).toString();
                 String Discoporcentagem = disk.getDiskPercent(0).toString();
-                String nomeMquina = "MaquinaTeste";
+                String nomeMquina = "TerceiraMaquina";
 
                 template.update(
                         "INSERT INTO dadosMaquinas VALUES(?,?,?,?,?,?,?,?,?,?,?,?)",
